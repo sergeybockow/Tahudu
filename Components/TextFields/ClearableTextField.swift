@@ -9,14 +9,14 @@ struct ClearableTextFieldStyle: TextFieldStyle {
     @Binding var text: String
     var symbol: String?
     @Binding var focused: Bool
-
+    
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
             .modifier(TextFieldClearButton(text: $text, symbol: symbol))
             .multilineTextAlignment(.leading)
             .padding()
             .background(RoundedRectangle(cornerRadius: 10)
-                            .stroke(focused ? Color.accentColor : Color(UIColor.lightGray), lineWidth: 1))
+                .stroke(focused ? Color.accentColor : Color(UIColor.lightGray), lineWidth: 1))
     }
 }
 

@@ -6,113 +6,121 @@
 import Foundation
 import UIKit
 
+struct SettingsItem {
+    let title: String
+    let icon: String
+    let detailText: String?
+    let accessibilityIdentifier: String?
+    
+    let action: () -> Void
+    
+    var cellStyle: UITableViewCell.CellStyle {
+        return detailText == nil ? .default : .value1
+    }
+}
+
+struct SettingsSection {
+    let headerTitle: String?
+    let settingItems: [SettingsItem]
+}
+    
 class SettingsViewController: UITableViewController {
+    
+    private var sections: [SettingsSection] = []
+    
     override func loadView() {
         super.loadView()
-
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = .systemGroupedBackground
         tableView.tableFooterView = UIView()
-
+        
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "SettingsCell")
     }
-
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        sections = [
+            SettingsSection(
+                headerTitle: "General",
+                settingItems: [
+                    SettingsItem(
+                        title: "Language",
+                        icon: "textFormat",
+                        detailText: nil,
+                        accessibilityIdentifier: "SettingsCell_language",
+                        action: { self.openSystemSettings() }
+                    ),
+                    SettingsItem(
+                        title: "Country",
+                        icon: "globe",
+                        detailText: "United Arab Emirates",
+                        accessibilityIdentifier: "SettingsCell_country",
+                        action: { self.showCountrySelectionScreen() }
+                    ),
+                    SettingsItem(
+                        title: "Notifications",
+                        icon: "app.badge",
+                        detailText: nil,
+                        accessibilityIdentifier: "SettingsCell_notifications",
+                        action: { self.showNotificationScreen() }
+                    ),
+                ]
+            ),
+            SettingsSection(
+                headerTitle: "About",
+                settingItems: [
+                    SettingsItem(
+                        title: "About",
+                        icon: "info.circle",
+                        detailText: nil,
+                        accessibilityIdentifier: "SettingsCell_about",
+                        action: { self.showAboutScreen() }
+                    ),
+                    SettingsItem(
+                        title: "Feedback",
+                        icon: "text.bubble",
+                        detailText: nil,
+                        accessibilityIdentifier: "SettnigsCell_feedback",
+                        action: { self.showFeedbackScreen() }
+                    )
+                ]
+            )
+        ]
+    }
+    
     override func numberOfSections(in _: UITableView) -> Int {
-        return 2
+        return sections.count
     }
-
+    
     override func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section == 0 ? 3 : 2
+        return sections[section].settingItems.count
     }
-
+    
     override func tableView(_: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
-            if indexPath.row == 0 {
-                let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
-                cell.accessibilityIdentifier = "SettingsCell_language"
-                cell.backgroundColor = .systemBackground
-                cell.selectionStyle = .default
-                cell.accessoryType = .disclosureIndicator
-                cell.imageView?.image = UIImage(systemName: "textformat")
-                cell.textLabel?.text = "Language"
-                cell.textLabel?.textColor = .label
-                cell.textLabel?.textAlignment = .natural
-                cell.detailTextLabel?.text = Locale.current.localizedString(forLanguageCode: Bundle.main.preferredLocalizations.first!)
-                cell.detailTextLabel?.textColor = .secondaryLabel
-                return cell
-            } else if indexPath.row == 1 {
-                let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
-                cell.accessibilityIdentifier = "SettingsCell_country"
-                cell.backgroundColor = .systemBackground
-                cell.selectionStyle = .default
-                cell.accessoryType = .disclosureIndicator
-                cell.imageView?.image = UIImage(systemName: "globe")
-                cell.textLabel?.text = "Country"
-                cell.textLabel?.textColor = .label
-                cell.textLabel?.textAlignment = .natural
-                cell.detailTextLabel?.text = "United Arab Emirates"
-                cell.detailTextLabel?.textColor = .secondaryLabel
-                return cell
-            } else if indexPath.row == 2 {
-                let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-                cell.accessibilityIdentifier = "SettingsCell_notifications"
-                cell.backgroundColor = .systemBackground
-                cell.selectionStyle = .default
-                cell.accessoryType = .disclosureIndicator
-                cell.imageView?.image = UIImage(systemName: "app.badge")
-                cell.textLabel?.text = "Notifications"
-                cell.textLabel?.textColor = .label
-                cell.textLabel?.textAlignment = .natural
-                return cell
-            }
-        } else if indexPath.section == 1 {
-            if indexPath.row == 0 {
-                let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-                cell.accessibilityIdentifier = "SettingsCell_about"
-                cell.backgroundColor = .systemBackground
-                cell.selectionStyle = .default
-                cell.accessoryType = .disclosureIndicator
-                cell.imageView?.image = UIImage(systemName: "info.circle")
-                cell.textLabel?.text = "About"
-                cell.textLabel?.textColor = .label
-                cell.textLabel?.textAlignment = .natural
-                return cell
-            } else if indexPath.row == 1 {
-                let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-                cell.accessibilityIdentifier = "SettnigsCell_feedback"
-                cell.backgroundColor = .systemBackground
-                cell.selectionStyle = .default
-                cell.accessoryType = .disclosureIndicator
-                cell.imageView?.image = UIImage(systemName: "text.bubble")
-                cell.textLabel?.text = "Feedback"
-                cell.textLabel?.textColor = .label
-                cell.textLabel?.textAlignment = .natural
-                return cell
-            }
-        }
-
-        return UITableViewCell()
+        let item = sections[indexPath.section].settingItems[indexPath.row]
+        
+        let cell = UITableViewCell(style: item.cellStyle, reuseIdentifier: nil)
+        
+        cell.textLabel?.text = item.title
+        cell.imageView?.image = UIImage(systemName: item.icon)
+        cell.detailTextLabel?.text = item.detailText
+        cell.accessibilityIdentifier = item.accessibilityIdentifier
+        
+        cell.backgroundColor = .systemBackground
+        cell.selectionStyle = .default
+        cell.accessoryType = .disclosureIndicator
+        cell.textLabel?.textColor = .label
+        cell.textLabel?.textAlignment = .natural
+        return cell
     }
-
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-
-        if indexPath.section == 0 {
-            if indexPath.row == 0 {
-                openSystemSettings()
-            } else if indexPath.row == 1 {
-                showCountrySelectionScreen()
-            } else if indexPath.row == 2 {
-                showNotificationScreen()
-            }
-        } else if indexPath.section == 1 {
-            if indexPath.row == 0 {
-                showAboutScreen()
-            } else if indexPath.row == 1 {
-                showFeedbackScreen()
-            }
-        }
+        let item = sections[indexPath.section].settingItems[indexPath.row]
+        item.action()
     }
 }
 

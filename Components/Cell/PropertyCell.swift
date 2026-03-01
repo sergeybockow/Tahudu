@@ -8,43 +8,58 @@ import SwiftUI
 
 struct PropertyCell: View {
     
-    private let property: Property
+    let property: Property
     
-    init(property: Property) {
-        self.property = property
-    }
+    private let formatter: RelativeDateTimeFormatter = {
+        let f = RelativeDateTimeFormatter()
+        f.unitsStyle = .full
+        return f
+    }()
     
     var body: some View {
         VStack(alignment: .leading, content: {
             if let url = URL(string: property.imageURL) {
-                ZStack {
-                    AsyncImage(url: url) { result in
-                        switch result {
+                ZStack(alignment: .bottomLeading) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
                         case .empty:
                             ProgressView()
                         case .success(let image):
-                            image.resizable().scaledToFill()
-                        case .failure(let error):
-                            Image(systemName: "xmark.octagon")
+                            image
                                 .resizable()
-                                .scaledToFit()
-                                .foregroundColor(.red)
+                                .scaledToFill()
+                                .frame(height: 200)
+                                .clipped()
+                        case .failure(let error):
+                            let _ = print("Image error: \(error)")
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(height: 200)
+                                .overlay(
+                                    Image(systemName: "house")
+                                        .foregroundColor(.gray)
+                                )
                         @unknown default:
-                            Image(systemName: "questionmark")
+                            EmptyView()
                         }
                     }
-                    VStack {
-                        List(property.propertyFeatures) {
-                            Text($0.rawValue)
+                    HStack {
+                        ForEach(property.propertyFeatures) { feature in
+                            Text(feature.rawValue)
                                 .font(.caption2)
-                                .background($0.color)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                
+                                .background(feature.color)
+                                .cornerRadius(4)
                         }
                     }
+                    .padding(8)
                 }
                 
             }
             VStack(alignment: .leading, content: {
-                Text("Apartment \(property.type.rawValue)")
+                Text("\(property.type.rawValue)")
                     .font(.caption)
                 Text(property.price)
                     .font(.headline)
@@ -54,7 +69,7 @@ struct PropertyCell: View {
             .padding()
             Divider()
             HStack {
-                Text("Published \(property.date.formatted()) ago")
+                Text("Published \(formatter.localizedString(for: property.date, relativeTo: Date()))")
                     .font(.caption)
                 Spacer()
                 ContactButton(.phone) {

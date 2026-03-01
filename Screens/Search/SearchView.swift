@@ -11,25 +11,26 @@ struct SearchView: View {
     @State private var text: String = ""
     
     var body: some View {
-        VStack {
-            HStack {
-                Button("", systemImage: "pencil") {
-                    print("filter")
-                }
-                Button("", systemImage: "trash") {
-                    print("filter")
-                }
-                Spacer()
-                Button("", systemImage: "star") {
-                    print("star")
+        NavigationStack {
+            VStack(spacing: 0) {
+                ClearableTextField(label: "City, area or building", text: $text)
+                    .padding()
+                
+                List(viewModel.models) { property in
+                    PropertyCell(property: property)
                 }
             }
-            .padding()
-            ClearableTextField(label: "City, area or building", text: $text)
-                .padding()
-            
-            List(viewModel.models) { property in
-                PropertyCell(property: property)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    HStack {
+                        Button("", systemImage: "pencil") { print("filter") }
+                        Button("", systemImage: "trash") { print("filter") }
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("", systemImage: "star") { print("star") }
+                }
             }
         }
     }
