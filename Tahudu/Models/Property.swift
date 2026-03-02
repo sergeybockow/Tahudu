@@ -22,8 +22,14 @@ struct Property: Identifiable {
         case newConstruction
         case liveViewing
         
-        var id: String {
-            return rawValue
+        var id: String { return rawValue }
+        
+        var displayName: String {
+            switch self {
+            case .verified: return "Verified"
+            case .newConstruction: return "New Construction"
+            case .liveViewing: return "Live Viewing"
+            }
         }
         
         var color: Color {
@@ -38,7 +44,7 @@ struct Property: Identifiable {
         }
     }
     
-    let imageURL: String
+    let imageURLs: [String]
     let type: PropertyType
     let price: String
     let address: String

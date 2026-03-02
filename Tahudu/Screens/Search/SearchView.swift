@@ -7,7 +7,12 @@ import SwiftUI
 
 struct SearchView: View {
     
-    @ObservedObject private var viewModel = SearchViewModel()
+    @StateObject private var viewModel: SearchViewModel
+    
+    init(viewModel: SearchViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
+    
     @State private var text: String = ""
     
     var body: some View {
@@ -41,6 +46,6 @@ struct SearchView_Previews: PreviewProvider {
     @Binding var text: String
 
     static var previews: some View {
-        SearchView()
+        SearchView(viewModel: SearchViewModel())
     }
 }

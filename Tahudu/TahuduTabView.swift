@@ -10,7 +10,7 @@ struct TahuduTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            SearchView()
+            SearchView(viewModel: SearchViewModel())
                 .tag(Tabs.search.rawValue)
                 .tabItem {
                     Label("Search", systemImage: "magnifyingglass")

@@ -16,7 +16,7 @@ struct ClearableTextFieldStyle: TextFieldStyle {
             .multilineTextAlignment(.leading)
             .padding()
             .background(RoundedRectangle(cornerRadius: 10)
-                .stroke(focused ? Color.accentColor : Color(UIColor.lightGray), lineWidth: 1))
+            .stroke(focused ? Color.accentColor : Color(UIColor.lightGray), lineWidth: 1))
     }
 }
 
